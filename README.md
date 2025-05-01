@@ -30,6 +30,7 @@ Inspired by the Stellarium open source project, Beyond brings the power of astro
 - **Time Controls**: View the sky at different times and dates
 - **Educational Content**: Learn about astronomy, celestial mechanics, and space exploration
 - **Observation Planning**: Tools for planning stargazing sessions based on celestial events
+- **Personalized Horoscope**: Daily, weekly, and monthly astrological readings based on celestial positions
 - **Offline Mode**: Full functionality without an internet connection
 
 ## Technology Stack
@@ -115,6 +116,7 @@ This project is currently in early development. We follow an iterative developme
 | Search Functionality | 📅 Planned | Ability to search for specific celestial objects |
 | Time Controls | 📅 Planned | View the sky at different times and dates |
 | Educational Content | 📅 Planned | Information about astronomy and celestial objects |
+| Personalized Horoscope | 📅 Planned | Daily, weekly, and monthly astrological readings |
 | Offline Mode | 📅 Planned | Full functionality without internet connection |
 
 ### Roadmap
@@ -128,8 +130,10 @@ This project is currently in early development. We follow an iterative developme
 - Implement search functionality
 - Add time controls
 - Develop educational content
+- Begin personalized horoscope feature development
 
 **Q4 2025**
+- Complete personalized horoscope functionality
 - Release beta version
 - Add offline mode
 - Implement user feedback
@@ -222,6 +226,7 @@ We welcome contributions from the community! Here's how you can help:
 - Implementing constellation visualization
 - Improving sensor fusion algorithms
 - Adding educational content
+- Developing personalized horoscope algorithms
 - Optimizing performance
 - Writing tests
 
