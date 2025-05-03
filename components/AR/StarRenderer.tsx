@@ -32,6 +32,7 @@ interface StarRendererProps {
     magnetometer: { x: number, y: number, z: number };
   } | null;
   isNightMode?: boolean;
+  maxStars?: number; // Maximum number of stars to render (for performance)
 }
 
 // Sample star data (brightest stars)
@@ -63,21 +64,22 @@ const SAMPLE_STARS: Omit<Star, 'x' | 'y' | 'size'>[] = [
 export default function StarRenderer({
   location,
   orientation,
-  isNightMode = false
+  isNightMode = false,
+  maxStars = 2000 // Default to 2000 stars max
 }: StarRendererProps) {
   const [stars, setStars] = useState<Star[]>([]);
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
 
-  // Calculate star positions based on device orientation and location
-  useEffect(() => {
-    if (!location || !orientation) return;
+  // Memoize star calculations to prevent unnecessary recalculations
+  const visibleStars = useMemo(() => {
+    if (!location || !orientation) return [];
 
     // Get current date and time
     const date = new Date();
 
     // Calculate horizontal coordinates for each star
-    const visibleStars = SAMPLE_STARS.map(star => {
+    const calculatedStars = SAMPLE_STARS.map(star => {
       // Convert equatorial coordinates (RA/Dec) to horizontal (Alt/Az)
       const { altitude, azimuth } = equatorialToHorizontal(
         star.ra,
@@ -117,26 +119,42 @@ export default function StarRenderer({
       };
     }).filter(Boolean) as Star[];
 
+    // Sort stars by brightness (magnitude) for better visual experience
+    // and to ensure the brightest stars are always shown
+    calculatedStars.sort((a, b) => a.mag - b.mag);
+
+    // Limit the number of stars based on maxStars parameter
+    return calculatedStars.slice(0, maxStars);
+  }, [location, orientation, screenWidth, screenHeight, maxStars]);
+
+  // Update stars state only when visibleStars changes
+  useEffect(() => {
     setStars(visibleStars);
-  }, [location, orientation, screenWidth, screenHeight]);
+  }, [visibleStars]);
+
+  // Memoized individual star component for better performance
+  const StarPoint = useMemo(() => {
+    return memo(({ star, isNightMode }: { star: Star, isNightMode: boolean }) => (
+      <View
+        style={[
+          styles.star,
+          {
+            left: star.x,
+            top: star.y,
+            width: star.size,
+            height: star.size,
+            backgroundColor: isNightMode ? 'red' : 'white',
+            opacity: isNightMode ? 0.8 : 1,
+          },
+        ]}
+      />
+    ));
+  }, []);
 
   return (
     <View style={styles.container}>
       {stars.map(star => (
-        <View
-          key={star.id}
-          style={[
-            styles.star,
-            {
-              left: star.x,
-              top: star.y,
-              width: star.size,
-              height: star.size,
-              backgroundColor: isNightMode ? 'red' : 'white',
-              opacity: isNightMode ? 0.8 : 1,
-            },
-          ]}
-        />
+        <StarPoint key={star.id} star={star} isNightMode={isNightMode} />
       ))}
     </View>
   );
