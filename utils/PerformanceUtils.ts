@@ -87,18 +87,19 @@ export class BatchUpdateManager {
    */
   private processBatch(): void {
     this.timeoutId = null;
-    
-    // Execute all queued updates
-    this.updateQueue.forEach(updateFn => {
+
+    // Swap queues before executing so updates queued during this batch are deferred.
+    const currentBatch = this.updateQueue;
+    this.updateQueue = new Map();
+
+    // Execute all updates that were queued when this batch started.
+    currentBatch.forEach(updateFn => {
       try {
         updateFn();
       } catch (error) {
         console.error('Error processing batched update:', error);
       }
     });
-    
-    // Clear the queue
-    this.updateQueue.clear();
   }
 
   /**
